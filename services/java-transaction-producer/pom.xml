@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.polyglot.auditor</groupId>
-    <artifactId>java-transaction-engine</artifactId>
+    <artifactId>java-transaction-producer</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <name>java-transaction-engine</name>
-    <description>Transaction ingestion, SQS publish, agent webhook</description>
+    <name>java-transaction-producer</name>
+    <description>Transaction ingress: capture events, publish to streaming (Kafka/Event Hubs) or SQS, agent webhook</description>
 
     <properties>
         <java.version>17</java.version>

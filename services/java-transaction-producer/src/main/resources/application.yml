@@ -20,4 +20,4 @@ app:
 
 spring:
   application:
-    name: java-transaction-engine
+    name: java-transaction-producer

@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     audit_callback_url: str = ""
     audit_callback_secret: str = ""
     aws_region: str = "us-east-1"
+    # Same names as the Java engine (LocalStack / real AWS).
+    aws_endpoint: str = ""
+    sqs_transaction_events_url: str = ""
 
 
 def get_settings() -> Settings:

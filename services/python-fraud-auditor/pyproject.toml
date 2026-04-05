@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "python-agent-auditor"
+name = "python-fraud-auditor"
 version = "0.1.0"
-description = "Fraud audit agent: AWS Lambda (SQS) and local FastAPI."
+description = "Autonomous fraud auditor: SQS/Lambda consumer, audit logic, FastAPI, callbacks (Streamlit UI planned)."
 requires-python = ">=3.11"
 dependencies = [
     "boto3>=1.35.0",
@@ -18,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 agent-api = "fraud_auditor.main:main"
+dev-sqs-poll = "fraud_auditor.dev_sqs_poll:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

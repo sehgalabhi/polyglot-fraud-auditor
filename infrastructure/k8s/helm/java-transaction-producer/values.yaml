@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: placeholder/java-transaction-engine
+  repository: placeholder/java-transaction-producer
   pullPolicy: IfNotPresent
   tag: "latest"
 
