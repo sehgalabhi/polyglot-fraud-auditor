@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+
+app:
+  aws:
+    region: ${AWS_REGION:us-east-1}
+    # Set for LocalStack: http://localhost:4566
+    endpoint: ${AWS_ENDPOINT:}
+  sqs:
+    transaction-events-url: ${SQS_TRANSACTION_EVENTS_URL:}
+
+spring:
+  application:
+    name: java-transaction-engine
