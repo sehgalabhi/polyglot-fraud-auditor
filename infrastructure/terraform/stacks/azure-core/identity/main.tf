@@ -1,0 +1,41 @@
+locals {
+  name_prefix = "${var.project_name}-${var.environment}"
+}
+
+resource "azuread_application" "workload" {
+  display_name = "${local.name_prefix}-${var.app_display_name}"
+}
+
+resource "azuread_service_principal" "workload" {
+  client_id = azuread_application.workload.client_id
+}
+
+resource "azuread_application_federated_identity_credential" "java" {
+  application_id = azuread_application.workload.id
+  display_name   = "${local.name_prefix}-java-federated"
+  description    = "Federated identity for Java producer service account"
+  audiences      = var.federated_audience
+  issuer         = var.oidc_issuer_url
+  subject        = var.java_service_account_subject
+}
+
+resource "azuread_application_federated_identity_credential" "python" {
+  application_id = azuread_application.workload.id
+  display_name   = "${local.name_prefix}-python-federated"
+  description    = "Federated identity for Python auditor service account"
+  audiences      = var.federated_audience
+  issuer         = var.oidc_issuer_url
+  subject        = var.python_service_account_subject
+}
+
+resource "azurerm_role_assignment" "eventhubs_sender" {
+  scope                = var.eventhubs_namespace_scope_id
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = azuread_service_principal.workload.object_id
+}
+
+resource "azurerm_role_assignment" "eventhubs_receiver" {
+  scope                = var.eventhubs_namespace_scope_id
+  role_definition_name = "Azure Event Hubs Data Receiver"
+  principal_id         = azuread_service_principal.workload.object_id
+}

@@ -1,0 +1,21 @@
+subscription_id = "00000000-0000-0000-0000-000000000000"
+tenant_id       = "00000000-0000-0000-0000-000000000000"
+
+project_name = "polyglot-fraud-auditor"
+environment  = "dev"
+
+app_display_name = "workload"
+
+oidc_issuer_url = "https://<your-oke-oidc-issuer>"
+federated_audience = [
+  "api://AzureADTokenExchange"
+]
+
+java_service_account_subject   = "system:serviceaccount:fraud:java-producer"
+python_service_account_subject = "system:serviceaccount:fraud:python-auditor"
+
+eventhubs_namespace_scope_id = "/subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.EventHub/namespaces/<namespace>"
+
+tags = {
+  owner = "platform-team"
+}
