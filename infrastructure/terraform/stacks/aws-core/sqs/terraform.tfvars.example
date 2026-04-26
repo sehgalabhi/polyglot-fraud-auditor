@@ -1,0 +1,14 @@
+project_name = "polyglot-fraud-auditor"
+environment  = "dev"
+aws_region   = "us-east-1"
+
+# Optional for localstack/dev:
+# aws_endpoint_override = "http://localhost:4566"
+
+alerts_queue_name       = "fraud-alerts"
+alerts_dlq_name         = "fraud-alerts-dlq"
+alerts_max_receive_count = 5
+
+tags = {
+  owner = "platform-team"
+}

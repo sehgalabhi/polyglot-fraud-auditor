@@ -1,0 +1,13 @@
+project_name = "polyglot-fraud-auditor"
+environment  = "dev"
+aws_region     = "us-east-1"
+
+# Optional for localstack/dev:
+# aws_endpoint_override = "http://localhost:4566"
+
+table_name         = "fraud-audit-context"
+partition_key_name = "transactionId"
+
+tags = {
+  owner = "platform-team"
+}

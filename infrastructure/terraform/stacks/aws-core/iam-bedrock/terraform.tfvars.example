@@ -1,0 +1,24 @@
+project_name = "polyglot-fraud-auditor"
+environment  = "dev"
+aws_region     = "us-east-1"
+
+# Optional for localstack/dev:
+# aws_endpoint_override = "http://localhost:4566"
+
+app_role_name = "fraud-auditor-app-role"
+
+# Paste ARNs from `aws-core/sqs` and `aws-core/dynamodb` stack outputs after those applies:
+alerts_queue_arn = "arn:aws:sqs:us-east-1:123456789012:dev-fraud-alerts"
+alerts_dlq_arn   = "arn:aws:sqs:us-east-1:123456789012:dev-fraud-alerts-dlq"
+
+dynamodb_table_arn = "arn:aws:dynamodb:us-east-1:123456789012:table/dev-fraud-audit-context"
+
+# Optional: pin to one model; if omitted, policy allows all foundation models in this region.
+# bedrock_model_arn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0"
+
+# Optional: replace EC2 default trust with OIDC/IRSA or your federation trust JSON string.
+# assume_role_policy_json = "{\"Version\":\"2012-10-17\",\"Statement\":[...]}"
+
+tags = {
+  owner = "platform-team"
+}
