@@ -1,0 +1,10 @@
+subscription_id     = "00000000-0000-0000-0000-000000000000"
+location            = "northeurope"
+resource_group_name = "rg-polyglot-fraud-auditor-dev"
+
+project_name = "polyglot-fraud-auditor"
+environment  = "dev"
+
+tags = {
+  owner = "platform-team"
+}
