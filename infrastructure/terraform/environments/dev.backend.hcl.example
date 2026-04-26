@@ -1,0 +1,5 @@
+bucket         = "polyglot-fraud-auditor-dev-123456789012-tfstate"
+key            = "dev/aws-core/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "polyglot-fraud-auditor-dev-terraform-locks"
+encrypt        = true
