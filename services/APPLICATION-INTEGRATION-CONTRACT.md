@@ -45,3 +45,15 @@ Java publishes this JSON shape; Python parses the same fields.
 6. Verify:
    - Python logs show message processed and decision computed.
    - DynamoDB contains an audit record for the `transactionId`.
+
+## Local API response shape
+
+`POST /v1/audit` (Python FastAPI) returns:
+
+```json
+{
+  "decision": "APPROVED",
+  "reasoning": "Amount is within automated threshold (10000).",
+  "persisted": true
+}
+```
