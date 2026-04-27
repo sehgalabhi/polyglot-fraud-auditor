@@ -25,3 +25,23 @@ Java publishes this JSON shape; Python parses the same fields.
   "status": "PENDING_AUDIT"
 }
 ```
+
+## Local run order (minimal flow)
+
+1. Start LocalStack or use provisioned AWS resources.
+2. Export required env vars for both apps:
+   - `AWS_REGION`
+   - `AWS_ENDPOINT` (if LocalStack)
+   - `SQS_TRANSACTION_EVENTS_URL`
+   - `DYNAMODB_AUDIT_TABLE` (for Python)
+3. Start Python poller:
+   - `cd services/python-fraud-auditor`
+   - `uv run dev-sqs-poll`
+4. Start Java API:
+   - `cd services/java-transaction-producer`
+   - `mvn spring-boot:run`
+5. POST a transaction to Java:
+   - `POST /api/v1/transactions`
+6. Verify:
+   - Python logs show message processed and decision computed.
+   - DynamoDB contains an audit record for the `transactionId`.

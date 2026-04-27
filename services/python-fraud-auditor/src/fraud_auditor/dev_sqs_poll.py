@@ -1,6 +1,6 @@
 """
-Long-poll LocalStack / AWS SQS and run the same path as Lambda (audit + webhook callback).
-Use with LocalStack Tier 1: same env vars as the Java engine for queue + endpoint.
+Long-poll LocalStack / AWS SQS and run the same processing path as Lambda.
+Use with LocalStack Tier 1: same env vars as the Java service for queue + endpoint.
 """
 
 from __future__ import annotations
@@ -36,11 +36,11 @@ def main() -> None:
         log.error("Set SQS_TRANSACTION_EVENTS_URL (same value as the Java service).")
         sys.exit(1)
 
-    client_kw: dict[str, Any] = {"region_name": settings.aws_region}
+    sqs_client_config: dict[str, Any] = {"region_name": settings.aws_region}
     if settings.aws_endpoint:
-        client_kw["endpoint_url"] = settings.aws_endpoint
+        sqs_client_config["endpoint_url"] = settings.aws_endpoint
 
-    client = boto3.client("sqs", **client_kw)
+    client = boto3.client("sqs", **sqs_client_config)
     url = settings.sqs_transaction_events_url
     log.info("Polling %s (Ctrl+C to stop)", url)
 
@@ -70,10 +70,12 @@ def main() -> None:
             try:
                 result = process_sqs_event(event)
                 failed = {f["itemIdentifier"] for f in result.get("batchItemFailures", [])}
+                # Acknowledge (delete) only when the handler marks this message as successful.
                 if mid not in failed and receipt:
                     client.delete_message(QueueUrl=url, ReceiptHandle=receipt)
                     log.info("Processed and deleted message %s", mid)
                 elif mid in failed:
+                    # Leave the message on the queue so SQS can redeliver after visibility timeout.
                     log.warning("Message %s left on queue for retry", mid)
             except Exception:
                 log.exception("Unexpected error for message %s", mid)
