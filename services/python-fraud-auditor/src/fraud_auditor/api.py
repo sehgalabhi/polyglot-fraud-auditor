@@ -5,6 +5,8 @@ from pydantic import BaseModel, Field
 
 from fraud_auditor.audit import evaluate_transaction
 from fraud_auditor.models import AuditDecision, TransactionEvent
+from fraud_auditor.persistence import save_audit_result
+from fraud_auditor.settings import get_settings
 
 app = FastAPI(title="Fraud agent auditor", version="0.1.0")
 
@@ -21,6 +23,7 @@ class AuditRequest(BaseModel):
 class AuditResponse(BaseModel):
     decision: str
     reasoning: str
+    persisted: bool
 
 
 @app.get("/health")
@@ -30,6 +33,7 @@ def health() -> dict[str, str]:
 
 @app.post("/v1/audit", response_model=AuditResponse)
 def audit(body: AuditRequest) -> AuditResponse:
+    settings = get_settings()
     event = TransactionEvent.model_validate(
         {
             "transactionId": body.transaction_id,
@@ -41,7 +45,9 @@ def audit(body: AuditRequest) -> AuditResponse:
         }
     )
     decision: AuditDecision = evaluate_transaction(event)
+    save_audit_result(event, decision, settings)
     return AuditResponse(
         decision=decision.decision,
         reasoning=decision.reasoning,
+        persisted=True,
     )

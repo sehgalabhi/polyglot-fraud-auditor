@@ -5,6 +5,8 @@ from typing import Any
 
 from fraud_auditor.audit import evaluate_transaction
 from fraud_auditor.models import TransactionEvent
+from fraud_auditor.persistence import save_audit_result
+from fraud_auditor.settings import get_settings
 
 log = logging.getLogger(__name__)
 if not log.handlers:
@@ -19,6 +21,7 @@ def _decode_record_body(record: dict[str, Any]) -> str:
 
 
 def process_sqs_event(event: dict[str, Any]) -> dict[str, Any]:
+    settings = get_settings()
     # Lambda partial batch response contract:
     # only messages listed in batchItemFailures are retried by SQS event source mapping.
     failures: list[dict[str, str]] = []
@@ -32,6 +35,8 @@ def process_sqs_event(event: dict[str, Any]) -> dict[str, Any]:
             # 3) Validate contract and run audit logic
             tx = TransactionEvent.model_validate(payload)
             decision = evaluate_transaction(tx)
+            # 4) Persist audit outcome; if this fails the message is marked for retry.
+            save_audit_result(tx, decision, settings)
             log.info("Processed message %s with decision=%s", message_id, decision.decision)
         except Exception:
             log.exception("Failed processing message %s", message_id)
