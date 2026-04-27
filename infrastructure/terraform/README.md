@@ -57,3 +57,28 @@ terraform init -migrate-state -backend-config=../../environments/dev.backend.hcl
 - `bootstrap/aws-state/`: creates S3 + DynamoDB backend resources
 - `environments/`: backend configuration templates for each environment
 - `stacks/aws-core/`: AWS application stacks (`sqs`, `dynamodb`, `iam-bedrock`); each subfolder is a separate Terraform root
+
+## Stack orchestration (shell script)
+
+No `make` required—only `bash` and `terraform` on your `PATH`.
+
+From the repo root:
+
+```bash
+bash infrastructure/terraform/terraform-stacks.sh help
+bash infrastructure/terraform/terraform-stacks.sh init-all
+bash infrastructure/terraform/terraform-stacks.sh apply-bootstrap   # once, if you use the S3 remote state bucket
+bash infrastructure/terraform/terraform-stacks.sh apply-all       # Azure → OCI → AWS (each stack needs its own terraform.tfvars)
+bash infrastructure/terraform/terraform-stacks.sh destroy-all     # destroys AWS → OCI → Azure (does not destroy bootstrap)
+```
+
+Or `cd infrastructure/terraform` and run `./terraform-stacks.sh …` (ensure the file is executable: `chmod +x terraform-stacks.sh`).
+
+`destroy-all` intentionally skips `bootstrap/aws-state` so you do not delete the shared state bucket by mistake. Use `destroy-bootstrap` only when you intend to remove it.
+
+For non-interactive runs (e.g. CI), you can set:
+
+```bash
+export TF_CLI_ARGS_apply="-auto-approve"
+export TF_CLI_ARGS_destroy="-auto-approve"
+```

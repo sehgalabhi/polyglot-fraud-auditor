@@ -30,14 +30,20 @@ public class TransactionEventPublisher {
 
     public void publish(TransactionEventPayload payload) {
         if (queueUrl == null || queueUrl.isBlank()) {
-            log.warn("app.sqs.transaction-events-url not set; skipping SQS publish for transactionId={}", payload.transactionId());
+            log.warn(
+                    "app.sqs.transaction-events-url not set; skipping SQS publish for transactionId={}",
+                    payload.transactionId());
             return;
         }
         try {
             String body = objectMapper.writeValueAsString(payload);
             sqsClient.sendMessage(
                     SendMessageRequest.builder().queueUrl(queueUrl).messageBody(body).build());
-            log.debug("Published transaction event {}", payload.transactionId());
+            log.info(
+                    "Published transactionId={} status={} to queue={}",
+                    payload.transactionId(),
+                    payload.status(),
+                    queueUrl);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Failed to serialize transaction event", e);
         }

@@ -16,9 +16,9 @@ It is a "Cloud-Agnostic" masterpiece, strategically utilizing the **Free Tiers**
 
 | README role | Module | Purpose |
 | :--- | :--- | :--- |
-| **Transaction Ingress (Java)** | [`services/java-transaction-producer`](services/java-transaction-producer/) | Spring Boot API: capture transactions, publish events (Kafka/Event Hubs wire protocol or SQS in dev), receive audit callbacks. |
-| **Autonomous Auditing (Python)** | [`services/python-fraud-auditor`](services/python-fraud-auditor/) | Fraud evaluation, SQS/Lambda-style handlers, FastAPI for local/dev, callbacks to Java. |
-| **Interactive Investigation (Streamlit)** | *planned* | Chat UI for auditors against stored reasoning / DynamoDB—add as its own service when built. |
+| **Transaction Ingress (Java)** | [`services/java-transaction-producer`](services/java-transaction-producer/) | Spring Boot API: capture transactions and publish events (Kafka/Event Hubs wire protocol or SQS in dev). |
+| **Autonomous Auditing (Python)** | [`services/python-fraud-auditor`](services/python-fraud-auditor/) | Fraud evaluation, SQS/Lambda-style handlers, and FastAPI endpoints for local/dev validation. |
+| **Interactive Investigation (Streamlit)** | optional extension | Chat UI for auditors against stored reasoning / DynamoDB, implemented as a separate service when enabled. |
 | **Kubernetes (OKE)** | [`infrastructure/k8s/helm/java-transaction-producer`](infrastructure/k8s/helm/java-transaction-producer/) | Helm chart for the Java producer on-cluster. |
 | **Local cloud simulation** | [`docker-compose.yml`](docker-compose.yml), [`local-dev/`](local-dev/) | LocalStack and init scripts for SQS-shaped local dev. |
 
@@ -28,11 +28,10 @@ It is a "Cloud-Agnostic" masterpiece, strategically utilizing the **Free Tiers**
 
 
 
-1.  **Transaction Ingress (Java):** A Spring Boot microservice running on **Oracle OKE** captures transaction events.
-2.  **Enterprise Streaming (Azure):** Events are pushed to **Azure Event Hubs** using the **Kafka Protocol**, demonstrating Azure-native messaging expertise.
-3.  **Autonomous Auditing (Python):** An AI Agent (built with **LangChain/LangGraph**) consumes events. It uses **Amazon Bedrock (Claude 3.5)** to perform deep analysis against historical data.
-4.  **Security Trigger (AWS):** Verified fraud alerts are dispatched to **AWS SQS** for downstream action.
-5.  **Interactive Investigation (AI Chatbot):** A **Streamlit** dashboard allows human auditors to "chat" with the AI to interrogate the reasoning behind any flagged fraud.
+1.  **Transaction Ingress (Java):** A Spring Boot microservice accepts transaction requests and publishes canonical transaction events to **AWS SQS**.
+2.  **Autonomous Auditing (Python):** The Python auditor consumes SQS events and evaluates risk decisions using baseline rules (extensible to Bedrock-backed inference).
+3.  **Audit Persistence (AWS):** Audit outcomes and reasoning are stored in **AWS DynamoDB** for downstream workflows and investigation.
+4.  **Optional Investigation UI:** A Streamlit module can be enabled later to inspect stored audit reasoning.
 
 ---
 
@@ -59,23 +58,9 @@ This project eliminates the need for hardcoded secrets.
 
 ```mermaid
 graph LR
-    subgraph "OCI (Compute)"
-    J[Java Producer] -->|Pod| K[K8s Cluster]
-    P[Python Auditor] -->|Pod| K
-    end
-
-    subgraph "Azure (Messaging & Auth)"
-    J -->|Kafka Wire Protocol| AEH[Azure Event Hubs]
-    Entra[Microsoft Entra ID] -.->|Identity Federation| K
-    end
-
-    subgraph "AWS (AI & Storage)"
-    P -->|Analyze| Bedrock[Amazon Bedrock LLM]
-    P -->|Alert| SQS[AWS SQS]
-    P -->|RAG Context| DDB[(AWS DynamoDB)]
-    end
-
-    subgraph "Frontend"
-    UI[Streamlit Bot] -->|Interrogate| DDB
-    end
+    Client[Client] -->|POST transaction| JavaApi[JavaTransactionAPI]
+    JavaApi -->|publish event| SQS[AWS SQS]
+    SQS -->|consume message| PyAuditor[PythonFraudAuditor]
+    PyAuditor -->|persist audit result| DDB[(AWS DynamoDB)]
+    UI[OptionalStreamlitUI] -->|query audit context| DDB
 ```

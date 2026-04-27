@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "python-fraud-auditor"
 version = "0.1.0"
-description = "Autonomous fraud auditor: SQS/Lambda consumer, audit logic, FastAPI, callbacks (Streamlit UI planned)."
+description = "Autonomous fraud auditor: SQS/Lambda consumer, audit logic, FastAPI, and callback integration."
 requires-python = ">=3.11"
 dependencies = [
     "boto3>=1.35.0",

@@ -11,6 +11,8 @@ management:
       show-details: when_authorized
 
 app:
+  # Shared env contract with Python service:
+  # AWS_REGION, AWS_ENDPOINT, SQS_TRANSACTION_EVENTS_URL
   aws:
     region: ${AWS_REGION:us-east-1}
     # Set for LocalStack: http://localhost:4566

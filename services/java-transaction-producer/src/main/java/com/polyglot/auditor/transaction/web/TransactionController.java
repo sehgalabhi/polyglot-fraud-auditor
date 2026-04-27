@@ -23,6 +23,7 @@ public class TransactionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
+    // Returns transactionId + PENDING_AUDIT after handing off to SQS publish flow.
     public CreateTransactionResponse create(@Valid @RequestBody CreateTransactionRequest body) {
         return transactionService.createPending(body);
     }

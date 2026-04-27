@@ -4,9 +4,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 from fraud_auditor.audit import evaluate_transaction
-from fraud_auditor.callback import post_audit_result
 from fraud_auditor.models import AuditDecision, TransactionEvent
-from fraud_auditor.settings import get_settings
 
 app = FastAPI(title="Fraud agent auditor", version="0.1.0")
 
@@ -23,7 +21,6 @@ class AuditRequest(BaseModel):
 class AuditResponse(BaseModel):
     decision: str
     reasoning: str
-    callback_sent: bool
 
 
 @app.get("/health")
@@ -44,12 +41,7 @@ def audit(body: AuditRequest) -> AuditResponse:
         }
     )
     decision: AuditDecision = evaluate_transaction(event)
-    settings = get_settings()
-    callback_sent = bool(settings.audit_callback_url)
-    if callback_sent:
-        post_audit_result(settings, event.transaction_id, decision)
     return AuditResponse(
         decision=decision.decision,
         reasoning=decision.reasoning,
-        callback_sent=callback_sent,
     )

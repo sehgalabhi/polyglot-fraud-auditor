@@ -4,9 +4,7 @@ import logging
 from typing import Any
 
 from fraud_auditor.audit import evaluate_transaction
-from fraud_auditor.callback import post_audit_result
 from fraud_auditor.models import TransactionEvent
-from fraud_auditor.settings import get_settings
 
 log = logging.getLogger(__name__)
 if not log.handlers:
@@ -21,7 +19,6 @@ def _decode_record_body(record: dict[str, Any]) -> str:
 
 
 def process_sqs_event(event: dict[str, Any]) -> dict[str, Any]:
-    settings = get_settings()
     failures: list[dict[str, str]] = []
     for record in event.get("Records", []):
         message_id = record.get("messageId", "")
@@ -29,8 +26,7 @@ def process_sqs_event(event: dict[str, Any]) -> dict[str, Any]:
             raw = _decode_record_body(record)
             payload = json.loads(raw)
             tx = TransactionEvent.model_validate(payload)
-            decision = evaluate_transaction(tx)
-            post_audit_result(settings, tx.transaction_id, decision)
+            _ = evaluate_transaction(tx)
         except Exception:
             log.exception("Failed processing message %s", message_id)
             if message_id:
