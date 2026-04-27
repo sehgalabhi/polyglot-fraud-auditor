@@ -8,17 +8,17 @@ compartment_ocid = "ocid1.compartment.oc1..replace_me"
 project_name = "polyglot-fraud-auditor"
 environment  = "dev"
 
-vcn_cidr            = "10.40.0.0/16"
-public_subnet_cidr  = "10.40.1.0/24"
-private_subnet_cidr = "10.40.2.0/24"
+# Paste from `oci-core/network` outputs after applying that stack.
+vcn_id           = "ocid1.vcn.oc1..replace_me"
+public_subnet_id = "ocid1.subnet.oc1..replace_me"
 
 # Optional. Set to null to let OCI pick defaults.
 kubernetes_version = null
 
-node_pool_size  = 2
-node_shape      = "VM.Standard.E4.Flex"
-node_ocpus      = 1
-node_memory_gbs = 8
+node_pool_size  = 1
+node_shape      = "VM.Standard.A1.Flex" # Always Free ARM shape
+node_ocpus      = 2                      # Per-node OCPU for A1 Flex
+node_memory_gbs = 12                     # Per-node memory in GB for A1 Flex
 
 freeform_tags = {
   owner = "platform-team"

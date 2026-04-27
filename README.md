@@ -16,11 +16,10 @@ It is a "Cloud-Agnostic" masterpiece, strategically utilizing the **Free Tiers**
 
 | README role | Module | Purpose |
 | :--- | :--- | :--- |
-| **Transaction Ingress (Java)** | [`services/java-transaction-producer`](services/java-transaction-producer/) | Spring Boot API: capture transactions and publish events (Kafka/Event Hubs wire protocol or SQS in dev). |
-| **Autonomous Auditing (Python)** | [`services/python-fraud-auditor`](services/python-fraud-auditor/) | Fraud evaluation, SQS/Lambda-style handlers, and FastAPI endpoints for local/dev validation. |
-| **Interactive Investigation (Streamlit)** | optional extension | Chat UI for auditors against stored reasoning / DynamoDB, implemented as a separate service when enabled. |
+| **Transaction Ingress (Java)** | [`services/java-transaction-producer`](services/java-transaction-producer/) | Spring Boot API: capture transactions and publish events to AWS SQS. |
+| **Autonomous Auditing (Python)** | [`services/python-fraud-auditor`](services/python-fraud-auditor/) | Fraud evaluation, SQS worker processing, and FastAPI endpoints for local/dev validation. |
+| **Infrastructure as Code** | [`infrastructure/terraform`](infrastructure/terraform/) | Multi-cloud infrastructure definitions (AWS, Azure, OCI) and orchestration scripts. |
 | **Kubernetes (OKE)** | [`infrastructure/k8s/helm/java-transaction-producer`](infrastructure/k8s/helm/java-transaction-producer/) | Helm chart for the Java producer on-cluster. |
-| **Local cloud simulation** | [`docker-compose.yml`](docker-compose.yml), [`local-dev/`](local-dev/) | LocalStack and init scripts for SQS-shaped local dev. |
 
 ---
 
@@ -29,9 +28,8 @@ It is a "Cloud-Agnostic" masterpiece, strategically utilizing the **Free Tiers**
 
 
 1.  **Transaction Ingress (Java):** A Spring Boot microservice accepts transaction requests and publishes canonical transaction events to **AWS SQS**.
-2.  **Autonomous Auditing (Python):** The Python auditor consumes SQS events and evaluates risk decisions using baseline rules (extensible to Bedrock-backed inference).
+2.  **Autonomous Auditing (Python):** The Python auditor consumes SQS events and evaluates risk decisions using deterministic baseline rules.
 3.  **Audit Persistence (AWS):** Audit outcomes and reasoning are stored in **AWS DynamoDB** for downstream workflows and investigation.
-4.  **Optional Investigation UI:** A Streamlit module can be enabled later to inspect stored audit reasoning.
 
 ---
 
@@ -40,8 +38,8 @@ It is a "Cloud-Agnostic" masterpiece, strategically utilizing the **Free Tiers**
 | Domain | Technologies | Certification Alignment |
 | :--- | :--- | :--- |
 | **Compute** | Oracle OKE (Kubernetes), Docker | **CKAD (Certified K8s Developer)** |
-| **Messaging** | Azure Event Hubs (Kafka), AWS SQS | **Azure Developer Associate** |
-| **Intelligence** | Python, LangGraph, Amazon Bedrock, RAG | **AI / Solutions Architect** |
+| **Messaging** | AWS SQS | **AWS Developer Associate** |
+| **Intelligence** | Python, deterministic fraud rules | **AI / Solutions Architect** |
 | **Infrastructure** | Terraform, GitHub Actions, S3 + DynamoDB | **AWS Solutions Architect** |
 | **Identity** | Microsoft Entra ID (Workload Identity) | **Zero-Trust Security** |
 
@@ -62,5 +60,4 @@ graph LR
     JavaApi -->|publish event| SQS[AWS SQS]
     SQS -->|consume message| PyAuditor[PythonFraudAuditor]
     PyAuditor -->|persist audit result| DDB[(AWS DynamoDB)]
-    UI[OptionalStreamlitUI] -->|query audit context| DDB
 ```

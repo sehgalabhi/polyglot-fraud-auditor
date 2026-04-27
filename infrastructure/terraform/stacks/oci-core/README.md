@@ -1,59 +1,36 @@
-# OCI Core Stack
+# OCI Core Stacks
 
-This stack provisions the OCI networking and OKE base required to run the project workloads.
+`oci-core` is split into resource-specific Terraform roots, similar to `aws-core`.
 
-## Resources Created
+## Prerequisites
 
-### Networking
+- Terraform `>= 1.6`
+- OCI credentials configured via `terraform.tfvars` values:
+  - `tenancy_ocid`, `user_ocid`, `fingerprint`, `private_key_path`, `region`
+- Target compartment OCID set in `compartment_ocid`
+- (Recommended) Remote backend configured before first apply
 
-- `oci_core_vcn.main`: project VCN
-- `oci_core_internet_gateway.main`: internet gateway for public traffic
-- `oci_core_route_table.public`: default route to internet gateway
-- `oci_core_subnet.public`: public subnet (API endpoint / load balancer path)
-- `oci_core_nat_gateway.main`: NAT gateway for private egress
-- `oci_core_route_table.private`: default route to NAT gateway
-- `oci_core_subnet.private`: private subnet for worker nodes
-- `oci_core_subnet_route_table_attachment.private`: attaches private route table to private subnet
+## Layout
 
-### OKE
-
-- `oci_containerengine_cluster.main`: OKE control plane
-- `oci_containerengine_node_pool.main`: worker node pool in private subnet
-
-### Data Sources Used
-
-- `oci_identity_availability_domains.ads`: selects availability domain
-- `oci_containerengine_node_pool_option.main`: resolves default node image
-
-## Variables Used
-
-- Required:
-  - `tenancy_ocid`
-  - `user_ocid`
-  - `fingerprint`
-  - `private_key_path`
-  - `region`
-  - `compartment_ocid`
-- Common optional:
-  - `project_name`, `environment`
-  - `vcn_cidr`, `public_subnet_cidr`, `private_subnet_cidr`
-  - `kubernetes_version`
-  - `node_pool_size`, `node_shape`, `node_ocpus`, `node_memory_gbs`
-  - `freeform_tags`
-
-## Outputs
-
-- `vcn_id`
-- `public_subnet_id`
-- `private_subnet_id`
-- `oke_cluster_id`
-- `oke_node_pool_id`
+- `network/`: VCN, internet gateway, route table, and subnets.
+- `oke/`: OKE cluster and node pool (uses IDs from `network` outputs).
 
 ## How to Use
 
 ```bash
+cd network
 cp terraform.tfvars.example terraform.tfvars
-terraform init
-terraform plan
-terraform apply
+terraform init && terraform apply
+
+cd ../oke
+cp terraform.tfvars.example terraform.tfvars
+# Paste vcn_id and public_subnet_id from `../network` outputs.
+terraform init && terraform apply
 ```
+
+## Notes
+
+- Public subnet is intended for ingress paths (for example, load balancer/API endpoint exposure).
+- Worker nodes run in the public subnet by default, so these stacks do not create NAT resources.
+- If you increase `node_pool_size`, ensure aggregate A1 OCPU and memory usage stays within your tenancy's Always Free allowance.
+- If you already bootstrapped remote state, run `terraform init -reconfigure` with your backend config.

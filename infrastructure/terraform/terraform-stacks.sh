@@ -18,12 +18,11 @@ TF="${TF:-terraform}"
 
 BOOTSTRAP="bootstrap/aws-state"
 AZ_RG="stacks/azure-core/resource-group"
-AZ_EH="stacks/azure-core/eventhubs"
 AZ_ID="stacks/azure-core/identity"
-OCI="stacks/oci-core"
+OCI_NETWORK="stacks/oci-core/network"
+OCI_OKE="stacks/oci-core/oke"
 AWS_SQS="stacks/aws-core/sqs"
 AWS_DDB="stacks/aws-core/dynamodb"
-AWS_IAM="stacks/aws-core/iam-bedrock"
 
 tf() {
   "$TF" -chdir="$ROOT/$1" "${@:2}"
@@ -64,36 +63,39 @@ case "$cmd" in
 
   init-azure)
     tf "$AZ_RG" init
-    tf "$AZ_EH" init
     tf "$AZ_ID" init
     ;;
   apply-azure)
     tf "$AZ_RG" apply
-    tf "$AZ_EH" apply
     tf "$AZ_ID" apply
     ;;
   destroy-azure)
     tf "$AZ_ID" destroy
-    tf "$AZ_EH" destroy
     tf "$AZ_RG" destroy
     ;;
 
-  init-oci) tf "$OCI" init ;;
-  apply-oci) tf "$OCI" apply ;;
-  destroy-oci) tf "$OCI" destroy ;;
+  init-oci)
+    tf "$OCI_NETWORK" init
+    tf "$OCI_OKE" init
+    ;;
+  apply-oci)
+    tf "$OCI_NETWORK" apply
+    tf "$OCI_OKE" apply
+    ;;
+  destroy-oci)
+    tf "$OCI_OKE" destroy
+    tf "$OCI_NETWORK" destroy
+    ;;
 
   init-aws)
     tf "$AWS_SQS" init
     tf "$AWS_DDB" init
-    tf "$AWS_IAM" init
     ;;
   apply-aws)
     tf "$AWS_SQS" apply
     tf "$AWS_DDB" apply
-    tf "$AWS_IAM" apply
     ;;
   destroy-aws)
-    tf "$AWS_IAM" destroy
     tf "$AWS_DDB" destroy
     tf "$AWS_SQS" destroy
     ;;
@@ -101,29 +103,26 @@ case "$cmd" in
   init-all)
     tf "$BOOTSTRAP" init
     tf "$AZ_RG" init
-    tf "$AZ_EH" init
     tf "$AZ_ID" init
-    tf "$OCI" init
+    tf "$OCI_NETWORK" init
+    tf "$OCI_OKE" init
     tf "$AWS_SQS" init
     tf "$AWS_DDB" init
-    tf "$AWS_IAM" init
     ;;
   apply-all)
     tf "$AZ_RG" apply
-    tf "$AZ_EH" apply
     tf "$AZ_ID" apply
-    tf "$OCI" apply
+    tf "$OCI_NETWORK" apply
+    tf "$OCI_OKE" apply
     tf "$AWS_SQS" apply
     tf "$AWS_DDB" apply
-    tf "$AWS_IAM" apply
     ;;
   destroy-all)
-    tf "$AWS_IAM" destroy
     tf "$AWS_DDB" destroy
     tf "$AWS_SQS" destroy
-    tf "$OCI" destroy
+    tf "$OCI_OKE" destroy
+    tf "$OCI_NETWORK" destroy
     tf "$AZ_ID" destroy
-    tf "$AZ_EH" destroy
     tf "$AZ_RG" destroy
     ;;
 

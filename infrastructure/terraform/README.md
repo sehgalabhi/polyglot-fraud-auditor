@@ -56,7 +56,8 @@ terraform init -migrate-state -backend-config=../../environments/dev.backend.hcl
 
 - `bootstrap/aws-state/`: creates S3 + DynamoDB backend resources
 - `environments/`: backend configuration templates for each environment
-- `stacks/aws-core/`: AWS application stacks (`sqs`, `dynamodb`, `iam-bedrock`); each subfolder is a separate Terraform root
+- `stacks/aws-core/`: AWS application stacks (`sqs`, `dynamodb`); each subfolder is a separate Terraform root
+- `stacks/oci-core/`: OCI stacks split by resource (`network`, `oke`)
 
 ## Stack orchestration (shell script)
 

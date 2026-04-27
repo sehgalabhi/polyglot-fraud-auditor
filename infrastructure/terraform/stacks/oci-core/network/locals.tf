@@ -6,7 +6,7 @@ locals {
       project     = var.project_name
       environment = var.environment
       managed_by  = "terraform"
-      stack       = "oci-core"
+      stack       = "oci-core-network"
     },
     var.freeform_tags
   )

@@ -27,15 +27,3 @@ resource "azuread_application_federated_identity_credential" "python" {
   issuer         = var.oidc_issuer_url
   subject        = var.python_service_account_subject
 }
-
-resource "azurerm_role_assignment" "eventhubs_sender" {
-  scope                = var.eventhubs_namespace_scope_id
-  role_definition_name = "Azure Event Hubs Data Sender"
-  principal_id         = azuread_service_principal.workload.object_id
-}
-
-resource "azurerm_role_assignment" "eventhubs_receiver" {
-  scope                = var.eventhubs_namespace_scope_id
-  role_definition_name = "Azure Event Hubs Data Receiver"
-  principal_id         = azuread_service_principal.workload.object_id
-}

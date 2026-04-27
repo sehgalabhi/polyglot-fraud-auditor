@@ -48,11 +48,6 @@ variable "python_service_account_subject" {
   type        = string
 }
 
-variable "eventhubs_namespace_scope_id" {
-  description = "Azure resource ID scope for Event Hubs namespace RBAC assignments."
-  type        = string
-}
-
 variable "tags" {
   description = "Optional additional tags for metadata outputs/documentation."
   type        = map(string)

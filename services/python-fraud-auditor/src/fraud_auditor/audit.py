@@ -10,7 +10,7 @@ REVIEW_THRESHOLD = Decimal("10000")
 def evaluate_transaction(event: TransactionEvent) -> AuditDecision:
     """
     Baseline deterministic risk rules.
-    This module is intentionally simple and can be extended with Bedrock-backed inference.
+    This module is intentionally simple and uses deterministic baseline rules.
     """
     # Single baseline rule: large-value transactions are routed for manual review.
     if event.amount > REVIEW_THRESHOLD:

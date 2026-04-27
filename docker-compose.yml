@@ -1,4 +1,4 @@
-# Local AWS API emulation (SQS, Lambda, IAM, …). See README "Local cloud simulation".
+# Local AWS API emulation (SQS, Lambda, IAM, …).
 services:
   localstack:
     image: localstack/localstack:4
@@ -10,7 +10,6 @@ services:
       DEBUG: "0"
     volumes:
       - localstack-data:/var/lib/localstack
-      - ./local-dev/localstack-ready.d:/etc/localstack/init/ready.d
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:4566/_localstack/health"]
       interval: 5s
