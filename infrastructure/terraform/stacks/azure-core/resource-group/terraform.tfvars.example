@@ -4,7 +4,3 @@ resource_group_name = "rg-polyglot-fraud-auditor-dev"
 
 project_name = "polyglot-fraud-auditor"
 environment  = "dev"
-
-tags = {
-  owner = "platform-team"
-}

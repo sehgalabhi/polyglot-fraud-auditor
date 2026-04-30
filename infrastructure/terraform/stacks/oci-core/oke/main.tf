@@ -1,17 +1,27 @@
+data "terraform_remote_state" "network" {
+  backend = "s3"
+
+  config = {
+    bucket = var.network_state_bucket
+    key    = var.network_state_key
+    region = var.network_state_region
+  }
+}
+
 resource "oci_containerengine_cluster" "main" {
   compartment_id     = var.compartment_ocid
   kubernetes_version = var.kubernetes_version
   name               = "${local.name_prefix}-oke"
-  vcn_id             = var.vcn_id
+  vcn_id             = data.terraform_remote_state.network.outputs.vcn_id
   freeform_tags      = local.common_tags
 
   endpoint_config {
     is_public_ip_enabled = true
-    subnet_id            = var.public_subnet_id
+    subnet_id            = data.terraform_remote_state.network.outputs.public_subnet_id
   }
 
   options {
-    service_lb_subnet_ids = [var.public_subnet_id]
+    service_lb_subnet_ids = [data.terraform_remote_state.network.outputs.public_subnet_id]
   }
 }
 
@@ -26,7 +36,7 @@ resource "oci_containerengine_node_pool" "main" {
   node_config_details {
     placement_configs {
       availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
-      subnet_id           = var.public_subnet_id
+      subnet_id           = data.terraform_remote_state.network.outputs.public_subnet_id
     }
     size = var.node_pool_size
   }

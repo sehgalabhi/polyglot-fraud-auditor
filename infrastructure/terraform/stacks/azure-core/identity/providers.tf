@@ -5,5 +5,6 @@ provider "azurerm" {
 }
 
 provider "azuread" {
-  tenant_id = var.tenant_id
+  # Uses active Azure CLI context by default.
+  # Keep provider tenant dynamic unless you explicitly set one.
 }

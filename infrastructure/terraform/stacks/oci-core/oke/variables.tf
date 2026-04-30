@@ -40,14 +40,22 @@ variable "environment" {
   default     = "dev"
 }
 
-variable "vcn_id" {
-  description = "VCN OCID created by the oci-core/network stack."
+variable "network_state_bucket" {
+  description = "S3 bucket containing Terraform state for the oci-core/network stack."
   type        = string
+  default     = "polyglot-fraud-auditor-dev-922120356372-tfstate"
 }
 
-variable "public_subnet_id" {
-  description = "Public subnet OCID created by the oci-core/network stack."
+variable "network_state_key" {
+  description = "S3 object key for oci-core/network stack state."
   type        = string
+  default     = "dev/oci-core/network/terraform.tfstate"
+}
+
+variable "network_state_region" {
+  description = "AWS region of the S3 backend storing oci-core/network state."
+  type        = string
+  default     = "eu-north-1"
 }
 
 variable "kubernetes_version" {

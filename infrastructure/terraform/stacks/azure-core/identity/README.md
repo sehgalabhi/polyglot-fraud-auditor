@@ -12,11 +12,12 @@ This stack provisions Microsoft Entra identity resources for secretless workload
 ## Variables Used
 
 - Required:
-  - `tenant_id`
-  - `oidc_issuer_url`
   - `java_service_account_subject`
   - `python_service_account_subject`
 - Optional:
+  - `tenant_id`
+  - `oidc_issuer_url` (manual override; otherwise read from OKE remote state)
+  - `oke_state_bucket`, `oke_state_key`, `oke_state_region`
   - `subscription_id`
   - `project_name`
   - `environment`

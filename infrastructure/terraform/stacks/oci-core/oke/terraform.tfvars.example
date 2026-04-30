@@ -8,9 +8,10 @@ compartment_ocid = "ocid1.compartment.oc1..replace_me"
 project_name = "polyglot-fraud-auditor"
 environment  = "dev"
 
-# Paste from `oci-core/network` outputs after applying that stack.
-vcn_id           = "ocid1.vcn.oc1..replace_me"
-public_subnet_id = "ocid1.subnet.oc1..replace_me"
+# Remote state location for `oci-core/network` outputs consumed by this stack.
+network_state_bucket = "polyglot-fraud-auditor-dev-922120356372-tfstate"
+network_state_key    = "dev/oci-core/network/terraform.tfstate"
+network_state_region = "eu-north-1"
 
 # Optional. Set to null to let OCI pick defaults.
 kubernetes_version = null

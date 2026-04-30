@@ -13,7 +13,7 @@
 ## Layout
 
 - `network/`: VCN, internet gateway, route table, and subnets.
-- `oke/`: OKE cluster and node pool (uses IDs from `network` outputs).
+- `oke/`: OKE cluster and node pool (reads network IDs from `network` remote state).
 
 ## How to Use
 
@@ -24,7 +24,6 @@ terraform init && terraform apply
 
 cd ../oke
 cp terraform.tfvars.example terraform.tfvars
-# Paste vcn_id and public_subnet_id from `../network` outputs.
 terraform init && terraform apply
 ```
 

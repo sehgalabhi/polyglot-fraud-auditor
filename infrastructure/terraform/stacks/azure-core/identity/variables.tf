@@ -5,8 +5,9 @@ variable "subscription_id" {
 }
 
 variable "tenant_id" {
-  description = "Microsoft Entra tenant ID."
+  description = "Optional Microsoft Entra tenant ID. Leave null to use current Azure CLI context."
   type        = string
+  default     = null
 }
 
 variable "project_name" {
@@ -28,8 +29,27 @@ variable "app_display_name" {
 }
 
 variable "oidc_issuer_url" {
-  description = "OIDC issuer URL for OCI/OKE workload identity federation."
+  description = "Optional OIDC issuer URL override. Leave null to read from oci-core/oke remote state."
   type        = string
+  default     = null
+}
+
+variable "oke_state_bucket" {
+  description = "S3 bucket containing Terraform state for the oci-core/oke stack."
+  type        = string
+  default     = "polyglot-fraud-auditor-dev-922120356372-tfstate"
+}
+
+variable "oke_state_key" {
+  description = "S3 object key for oci-core/oke stack state."
+  type        = string
+  default     = "dev/oci-core/oke/terraform.tfstate"
+}
+
+variable "oke_state_region" {
+  description = "AWS region of the S3 backend storing oci-core/oke state."
+  type        = string
+  default     = "eu-north-1"
 }
 
 variable "federated_audience" {

@@ -1,12 +1,16 @@
 subscription_id = "00000000-0000-0000-0000-000000000000"
-tenant_id       = "00000000-0000-0000-0000-000000000000"
 
 project_name = "polyglot-fraud-auditor"
 environment  = "dev"
 
 app_display_name = "workload"
 
-oidc_issuer_url = "https://<your-oke-oidc-issuer>"
+# Optional override; if omitted, stack reads OIDC issuer from oci-core/oke remote state.
+# oidc_issuer_url = "https://<your-oke-oidc-issuer>"
+oke_state_bucket = "polyglot-fraud-auditor-dev-922120356372-tfstate"
+oke_state_key    = "dev/oci-core/oke/terraform.tfstate"
+oke_state_region = "eu-north-1"
+
 federated_audience = [
   "api://AzureADTokenExchange"
 ]
